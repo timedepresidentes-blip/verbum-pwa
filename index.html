@@ -751,6 +751,13 @@ function renderLit(l) {
   document.getElementById("lit-cont").innerHTML = h;
 }
 function togLit(i) { document.getElementById("li" + i).classList.toggle("ab"); }
+function mostrarToast() {
+  var t = document.createElement("div");
+  t.textContent = "✓ Versículos encontrados! Role para baixo ↓";
+  t.style.cssText = "position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2D8B4F;color:#fff;padding:12px 22px;border-radius:24px;font-size:13px;z-index:9999;letter-spacing:.5px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.5);white-space:nowrap;animation:fadeIn .3s ease";
+  document.body.appendChild(t);
+  setTimeout(function() { t.style.opacity="0"; t.style.transition="opacity .4s"; setTimeout(function(){t.remove();},400); }, 3000);
+}
 function togSanto(t) {
   var h = document.getElementById("santo-hist"), o = document.getElementById("santo-orac");
   if (t === "hist") { h.style.display = h.style.display === "block" ? "none" : "block"; o.style.display = "none"; }
@@ -811,10 +818,7 @@ function toggleMic() {
           setTimeout(function() {
             if (document.getElementById("b-inp").value.trim()) {
               buscar();
-              setTimeout(function() {
-                var res = document.getElementById("res-busca");
-                if (res) res.scrollIntoView({ behavior: "smooth", block: "start" });
-              }, 800);
+              setTimeout(mostrarToast, 600);
             }
           }, 300);
         }).catch(function() {
@@ -822,10 +826,7 @@ function toggleMic() {
           setTimeout(function() {
             if (document.getElementById("b-inp").value.trim()) {
               buscar();
-              setTimeout(function() {
-                var res = document.getElementById("res-busca");
-                if (res) res.scrollIntoView({ behavior: "smooth", block: "start" });
-              }, 800);
+              setTimeout(mostrarToast, 600);
             }
           }, 300);
         });
