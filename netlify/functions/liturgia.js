@@ -56,9 +56,26 @@ exports.handler = async function(event, context) {
     }
   }
 
+  // Fallback: retorna estrutura válida para o app não mostrar "sem conexão"
+  const hoje = new Date();
+  const diaStr = hoje.toLocaleDateString("pt-BR", { weekday:"long", day:"numeric", month:"long" });
   return {
-    statusCode: 500,
+    statusCode: 200,
     headers,
-    body: JSON.stringify({ erro: "Falha em todos os modelos", detalhes: erros })
+    body: JSON.stringify({
+      celebracao: "Liturgia do Dia",
+      corLiturgica: "Verde",
+      tempoLiturgico: "Tempo Comum — " + diaStr,
+      leituras: [
+        {
+          tipo: "Aviso",
+          ref: "--",
+          resumo: "Serviço temporariamente indisponível",
+          texto: "O serviço de liturgia está com instabilidade no momento. Tente novamente em alguns minutos. Para a liturgia completa, acesse: liturgia.cancaonova.com"
+        }
+      ],
+      _fallback: true,
+      _erros: erros
+    })
   };
 };
