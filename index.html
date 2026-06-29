@@ -809,7 +809,13 @@ function toggleMic() {
           updBsc();
           st.style.display = "none";
           setTimeout(function() {
-            if (document.getElementById("b-inp").value.trim()) buscar();
+            if (document.getElementById("b-inp").value.trim()) {
+              buscar();
+              st.textContent = "✓ Pronto! Role para ver os versículos ↓";
+              st.style.color = "rgba(100,220,130,.9)";
+              st.style.display = "block";
+              setTimeout(function() { st.style.display = "none"; }, 3000);
+            }
           }, 300);
         }).catch(function() {
           st.style.display = "none";
