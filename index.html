@@ -804,9 +804,15 @@ function toggleMic() {
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({audio: b64, mimeType: "audio/webm"})
         }).then(function(r) { return r.json(); }).then(function(data) {
-          var txt = data.texto || "";
-          if (txt) { document.getElementById("b-inp").value = txt; updBsc(); buscar(); }
-          st.style.display = "none";
+          var txt = (data.texto || "").trim();
+          if (txt) {
+            document.getElementById("b-inp").value = txt;
+            updBsc();
+            st.style.display = "none";
+            setTimeout(buscar, 300);
+          } else {
+            st.style.display = "none";
+          }
         }).catch(function() { st.style.display = "none"; });
       };
       reader.readAsDataURL(blob);
