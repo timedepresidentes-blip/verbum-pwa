@@ -709,7 +709,7 @@ function carregarLit() {
         })
         .catch(function() {
           // Tentar funcao do Netlify como fallback
-          fetch("/.netlify/functions/liturgia")
+          fetch("/api/liturgia")
             .then(function(r) { return r.json(); })
             .then(function(data) {
               if (data.erro) throw new Error();
@@ -759,7 +759,7 @@ function toggleMic() {
         var st = document.getElementById("mic-st");
         st.style.display = "block";
         st.textContent = "transcrevendo...";
-        fetch("/.netlify/functions/transcricao", {
+        fetch("/api/transcricao", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({audio: b64, mimeType: "audio/webm"})
@@ -803,7 +803,7 @@ function buscar() {
   div.innerHTML = "<div class='spin-box'><div class='spin'></div><div class='spin-lb'>buscando...</div></div>";
   if (mIA) {
     var vsPayload = VS.map(function(v) { return {r: v.r, t: v.t}; });
-    fetch("/.netlify/functions/busca", {
+    fetch("/api/busca", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({query: q, versiculos: vsPayload})
