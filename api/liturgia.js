@@ -22,7 +22,10 @@ module.exports = async (req, res) => {
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + GROQ_KEY },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+          { role: "system", content: "Voce e um especialista em liturgia catolica brasileira. Responda SEMPRE com JSON valido incluindo OBRIGATORIAMENTE todos os campos: celebracao, corLiturgica, tempoLiturgico, leituras (array com Primeira Leitura, Salmo Responsorial e Evangelho), e santo (com nome, wikipediaSlug, historia e oracao). Nunca omita o campo santo." },
+          { role: "user", content: prompt }
+        ],
         temperature: 0.2,
         max_tokens: 6000,
         response_format: { type: "json_object" }
