@@ -57,7 +57,6 @@ exports.handler = async function(event, context) {
   }
 
   // Fallback: retorna estrutura válida para o app não mostrar "sem conexão"
-  const hoje = new Date();
   const diaStr = hoje.toLocaleDateString("pt-BR", { weekday:"long", day:"numeric", month:"long" });
   return {
     statusCode: 200,
