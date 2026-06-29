@@ -805,15 +805,18 @@ function toggleMic() {
           body: JSON.stringify({audio: b64, mimeType: "audio/webm"})
         }).then(function(r) { return r.json(); }).then(function(data) {
           var txt = (data.texto || "").trim();
-          if (txt) {
-            document.getElementById("b-inp").value = txt;
-            updBsc();
-            st.style.display = "none";
-            setTimeout(buscar, 300);
-          } else {
-            st.style.display = "none";
-          }
-        }).catch(function() { st.style.display = "none"; });
+          if (txt) document.getElementById("b-inp").value = txt;
+          updBsc();
+          st.style.display = "none";
+          setTimeout(function() {
+            if (document.getElementById("b-inp").value.trim()) buscar();
+          }, 300);
+        }).catch(function() {
+          st.style.display = "none";
+          setTimeout(function() {
+            if (document.getElementById("b-inp").value.trim()) buscar();
+          }, 300);
+        });
       };
       reader.readAsDataURL(blob);
     };
