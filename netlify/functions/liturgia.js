@@ -43,11 +43,13 @@ exports.handler = async function(event, context) {
     return { statusCode: 200, headers, body: match[0] };
 
   } catch (e) {
+    console.log("ERRO GROQ:", e.message);
     const diaStr = hoje.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
+        _erro_debug: e.message,
         celebracao: "Liturgia do Dia",
         corLiturgica: "Verde",
         tempoLiturgico: "Tempo Comum — " + diaStr,
