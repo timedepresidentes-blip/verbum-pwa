@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   const ano = hoje.getFullYear();
 
   const prompt = `Liturgia catolica do dia ${dia} de ${nomeMes} de ${ano} no Brasil. Retorne APENAS JSON valido:
-{"celebracao":"nome da celebracao","corLiturgica":"Verde","tempoLiturgico":"texto","leituras":[{"tipo":"Primeira Leitura","ref":"ref","resumo":"titulo","texto":"texto completo"},{"tipo":"Salmo Responsorial","ref":"ref","resumo":"refrao","texto":"texto"},{"tipo":"Evangelho","ref":"ref","resumo":"titulo","texto":"texto completo"}],"santo":{"nome":"nome completo do santo do dia","wikipediaSlug":"nome_do_santo_sem_acentos_com_underline_para_busca_na_wikipedia_pt","historia":"historia breve do santo em 3 linhas","oracao":"oracao curta ao santo em 2 linhas"}}`;
+{"celebracao":"nome da celebracao","corLiturgica":"Verde","tempoLiturgico":"texto","leituras":[{"tipo":"Primeira Leitura","ref":"ref","resumo":"titulo","texto":"texto completo"},{"tipo":"Salmo Responsorial","ref":"ref","resumo":"refrao","texto":"texto"},{"tipo":"Evangelho","ref":"ref","resumo":"titulo","texto":"texto completo"}]}`;
 
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "Voce e um especialista em liturgia catolica brasileira. Responda SEMPRE com JSON valido incluindo OBRIGATORIAMENTE todos os campos: celebracao, corLiturgica, tempoLiturgico, leituras (array com Primeira Leitura, Salmo Responsorial e Evangelho), e santo (com nome, wikipediaSlug, historia e oracao). Nunca omita o campo santo." },
+          { role: "system", content: "Voce e um especialista em liturgia catolica brasileira. Responda SEMPRE com JSON valido contendo: celebracao, corLiturgica, tempoLiturgico e leituras." },
           { role: "user", content: prompt }
         ],
         temperature: 0.2,

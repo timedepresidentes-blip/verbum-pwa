@@ -383,6 +383,7 @@ html,body{width:100%;height:100%;background:#04010e;overflow:hidden;touch-action
     <div class="pg-titulo">Liturgia do Dia</div>
     <div class="pg-data" id="dt-hoje"></div>
     <div id="lit-cont"><div class="spin-box"><div class="spin"></div><div class="spin-lb">buscando liturgia...</div></div></div>
+    <div id="santo-cont"></div>
   </div>
 </div>
 
@@ -629,7 +630,7 @@ function aba(a) {
   document.getElementById("raios").style.display = eS ? "block" : "none";
   document.getElementById("grad").style.opacity = eS ? "1" : "0";
   document.getElementById("bg").style.opacity = eS ? "1" : "0.05";
-  if (a === "hoje" && !litOk) carregarLit();
+  if (a === "hoje" && !litOk) { carregarLit(); carregarSanto(); }
 }
 
 // Oracao
@@ -747,25 +748,6 @@ function renderLit(l) {
     h += "<div class='lit-item' id='li" + i + "'><button class='lit-hdr' onclick='togLit(" + i + ")'><div><span class='lit-tipo'>" + lt.tipo + "</span><span class='lit-ref'>" + lt.ref + "</span><span class='lit-res'>" + lt.resumo + "</span></div><span class='lit-seta'>></span></button><div class='lit-body'><p class='lit-txt'>" + (lt.texto || lt.resumo) + "</p></div></div>";
   }
   h += "<div class='fonte-box'><p class='fonte-txt'>Fonte: Cancao Nova / CNBB</p></div>";
-  if (l.santo && l.santo.nome) {
-    var s = l.santo;
-    h += "<div class='santo-box'><div class='santo-img-ph' id='santo-ph'>✝</div><img class='santo-img' id='santo-img' src='' alt='" + s.nome + "' style='display:none'/><div class='santo-info'><div class='santo-lb'>Santo do Dia</div><div class='santo-nm'>" + s.nome + "</div><div class='santo-btns'><button class='santo-btn' onclick='togSanto(\"hist\")'>História</button><button class='santo-btn' onclick='togSanto(\"orac\")'>Oração</button></div></div></div>";
-    h += "<div class='santo-det' id='santo-hist'>" + (s.historia || "") + "</div>";
-    h += "<div class='santo-det' id='santo-orac'>" + (s.oracao || "") + "</div>";
-    if (s.wikipediaSlug) {
-      setTimeout(function() {
-        fetch("https://pt.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(s.wikipediaSlug))
-          .then(function(r){return r.json();}).then(function(d){
-            if (d.thumbnail) {
-              var img = document.getElementById("santo-img");
-              var ph = document.getElementById("santo-ph");
-              if (img) { img.src = d.thumbnail.source; img.style.display = "block"; }
-              if (ph) ph.style.display = "none";
-            }
-          }).catch(function(){});
-      }, 300);
-    }
-  }
   document.getElementById("lit-cont").innerHTML = h;
 }
 function togLit(i) { document.getElementById("li" + i).classList.toggle("ab"); }
@@ -773,6 +755,30 @@ function togSanto(t) {
   var h = document.getElementById("santo-hist"), o = document.getElementById("santo-orac");
   if (t === "hist") { h.style.display = h.style.display === "block" ? "none" : "block"; o.style.display = "none"; }
   else { o.style.display = o.style.display === "block" ? "none" : "block"; h.style.display = "none"; }
+}
+function renderSanto(s) {
+  var c = document.getElementById("santo-cont");
+  if (!c || !s || !s.nome) return;
+  var h = "<div class='santo-box'><div class='santo-img-ph' id='santo-ph'>✝</div><img class='santo-img' id='santo-img' src='' alt='" + s.nome + "' style='display:none'/><div class='santo-info'><div class='santo-lb'>Santo do Dia</div><div class='santo-nm'>" + s.nome + "</div><div class='santo-btns'><button class='santo-btn' onclick='togSanto(\"hist\")'>História</button><button class='santo-btn' onclick='togSanto(\"orac\")'>Oração</button></div></div></div>";
+  h += "<div class='santo-det' id='santo-hist'>" + (s.historia || "") + "</div>";
+  h += "<div class='santo-det' id='santo-orac'>" + (s.oracao || "") + "</div>";
+  c.innerHTML = h;
+  if (s.wikipediaSlug) {
+    fetch("https://pt.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(s.wikipediaSlug))
+      .then(function(r){return r.json();}).then(function(d){
+        if (d.thumbnail) {
+          var img = document.getElementById("santo-img");
+          var ph = document.getElementById("santo-ph");
+          if (img) { img.src = d.thumbnail.source; img.style.display = "block"; }
+          if (ph) ph.style.display = "none";
+        }
+      }).catch(function(){});
+  }
+}
+function carregarSanto() {
+  fetch("/api/santo").then(function(r){return r.json();}).then(function(s){
+    renderSanto(s);
+  }).catch(function(){});
 }
 
 // Microfone
