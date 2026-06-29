@@ -400,7 +400,7 @@ html,body{width:100%;height:100%;background:#04010e;overflow:hidden;touch-action
       <button id="mic-btn" onclick="toggleMic()">mic</button>
     </div>
     <div id="mic-st"></div>
-    <div class="tm-lb">temas rapidos</div>
+    <div class="tm-lb">temas rápidos</div>
     <div class="tm-grid" id="tm-grid"></div>
     <button class="btn-bsc" id="btn-bsc" onclick="buscar()">Encontrar Versiculos</button>
     <div id="res-busca"></div>
@@ -741,13 +741,13 @@ function carregarLit() {
 }
 function renderLit(l) {
   var cor = CORES[l.corLiturgica] || "#2D6A4F";
-  var h = "<div class='cel-box'><div><div class='cel-lb'>Celebracao</div><div class='cel-vl'>" + (l.celebracao || "Tempo Comum") + "</div><div class='cel-tp'>" + (l.tempoLiturgico || "") + "</div></div><div class='dot-cor' style='background:" + cor + ";box-shadow:0 0 10px " + cor + "'></div></div>";
+  var h = "<div class='cel-box'><div><div class='cel-lb'>Celebração</div><div class='cel-vl'>" + (l.celebracao || "Tempo Comum") + "</div><div class='cel-tp'>" + (l.tempoLiturgico || "") + "</div></div><div class='dot-cor' style='background:" + cor + ";box-shadow:0 0 10px " + cor + "'></div></div>";
   var lts = l.leituras || [];
   for (var i = 0; i < lts.length; i++) {
     var lt = lts[i];
     h += "<div class='lit-item' id='li" + i + "'><button class='lit-hdr' onclick='togLit(" + i + ")'><div><span class='lit-tipo'>" + lt.tipo + "</span><span class='lit-ref'>" + lt.ref + "</span><span class='lit-res'>" + lt.resumo + "</span></div><span class='lit-seta'>></span></button><div class='lit-body'><p class='lit-txt'>" + (lt.texto || lt.resumo) + "</p></div></div>";
   }
-  h += "<div class='fonte-box'><p class='fonte-txt'>Fonte: Cancao Nova / CNBB</p></div>";
+  h += "<div class='fonte-box'><p class='fonte-txt'>Fonte: Canção Nova / CNBB</p></div>";
   document.getElementById("lit-cont").innerHTML = h;
 }
 function togLit(i) { document.getElementById("li" + i).classList.toggle("ab"); }

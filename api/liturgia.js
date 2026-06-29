@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
       celebracao: "Liturgia do Dia",
       corLiturgica: "Verde",
       tempoLiturgico: "Tempo Comum — " + diaStr,
-      leituras: [{ tipo: "Aviso", ref: "--", resumo: "Servico temporariamente indisponivel",
+      leituras: [{ tipo: "Aviso", ref: "--", resumo: "Serviço temporariamente indisponível",
         texto: "Tente novamente em alguns minutos. Liturgia completa: liturgia.cancaonova.com" }]
     });
   }
