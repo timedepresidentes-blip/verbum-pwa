@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   const ano = hoje.getFullYear();
 
   const prompt = `Liturgia catolica do dia ${dia} de ${nomeMes} de ${ano} no Brasil. Retorne APENAS JSON valido:
-{"celebracao":"nome da celebracao","corLiturgica":"Verde","tempoLiturgico":"texto","leituras":[{"tipo":"Primeira Leitura","ref":"ref","resumo":"titulo","texto":"texto completo"},{"tipo":"Salmo Responsorial","ref":"ref","resumo":"refrao","texto":"texto"},{"tipo":"Evangelho","ref":"ref","resumo":"titulo","texto":"texto completo"}]}`;
+{"celebracao":"nome da celebracao","corLiturgica":"Verde","tempoLiturgico":"texto","leituras":[{"tipo":"Primeira Leitura","ref":"ref","resumo":"titulo","texto":"texto completo"},{"tipo":"Salmo Responsorial","ref":"ref","resumo":"refrao","texto":"texto"},{"tipo":"Evangelho","ref":"ref","resumo":"titulo","texto":"texto completo"}],"santo":{"nome":"nome do santo do dia","wikipediaSlug":"slug_do_artigo_em_pt_wikipedia","historia":"historia do santo em 4 linhas","oracao":"oracao ao santo em 3 linhas"}}`;
 
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {

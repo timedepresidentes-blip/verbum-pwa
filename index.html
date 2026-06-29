@@ -116,6 +116,16 @@ html,body{width:100%;height:100%;background:#04010e;overflow:hidden;touch-action
 .lit-txt{font-size:14px;color:rgba(255,255,255,.85);font-style:italic;line-height:1.9;font-family:Georgia,serif}
 .fonte-box{margin-top:14px;padding:10px;border:1px solid rgba(201,151,58,.09);border-radius:3px;text-align:center}
 .fonte-txt{font-size:9px;color:rgba(255,255,255,.22);letter-spacing:1px}
+.santo-box{margin-top:18px;background:rgba(201,151,58,.07);border:1px solid rgba(201,151,58,.2);border-radius:8px;padding:14px;display:flex;gap:14px;align-items:center}
+.santo-img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid rgba(201,151,58,.4);flex-shrink:0}
+.santo-img-ph{width:72px;height:72px;border-radius:50%;background:rgba(201,151,58,.1);border:2px solid rgba(201,151,58,.3);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.santo-info{flex:1}
+.santo-lb{font-size:9px;letter-spacing:2px;color:rgba(201,151,58,.6);text-transform:uppercase;margin-bottom:4px}
+.santo-nm{font-size:15px;color:#C9973A;font-family:Georgia,serif;margin-bottom:10px}
+.santo-btns{display:flex;gap:8px;flex-wrap:wrap}
+.santo-btn{background:transparent;border:1px solid rgba(201,151,58,.35);color:rgba(201,151,58,.8);padding:5px 12px;border-radius:20px;font-size:11px;cursor:pointer;letter-spacing:1px}
+.santo-btn:hover{background:rgba(201,151,58,.1)}
+.santo-det{margin-top:10px;padding:14px;background:rgba(0,0,0,.3);border-radius:6px;font-size:13px;color:rgba(255,255,255,.82);font-family:Georgia,serif;line-height:1.8;display:none}
 .spin-box{text-align:center;padding:44px 20px}
 .spin{width:28px;height:28px;border:2px solid rgba(201,151,58,.2);border-top:2px solid #C9973A;border-radius:50%;animation:giro 1s linear infinite;margin:0 auto 14px}
 .spin-lb{font-size:10px;color:rgba(201,151,58,.55);letter-spacing:3px;text-transform:uppercase;font-family:"Cinzel",serif}
@@ -737,9 +747,33 @@ function renderLit(l) {
     h += "<div class='lit-item' id='li" + i + "'><button class='lit-hdr' onclick='togLit(" + i + ")'><div><span class='lit-tipo'>" + lt.tipo + "</span><span class='lit-ref'>" + lt.ref + "</span><span class='lit-res'>" + lt.resumo + "</span></div><span class='lit-seta'>></span></button><div class='lit-body'><p class='lit-txt'>" + (lt.texto || lt.resumo) + "</p></div></div>";
   }
   h += "<div class='fonte-box'><p class='fonte-txt'>Fonte: Cancao Nova / CNBB</p></div>";
+  if (l.santo && l.santo.nome) {
+    var s = l.santo;
+    h += "<div class='santo-box'><div class='santo-img-ph' id='santo-ph'>✝</div><img class='santo-img' id='santo-img' src='' alt='" + s.nome + "' style='display:none'/><div class='santo-info'><div class='santo-lb'>Santo do Dia</div><div class='santo-nm'>" + s.nome + "</div><div class='santo-btns'><button class='santo-btn' onclick='togSanto(\"hist\")'>História</button><button class='santo-btn' onclick='togSanto(\"orac\")'>Oração</button></div></div></div>";
+    h += "<div class='santo-det' id='santo-hist'>" + (s.historia || "") + "</div>";
+    h += "<div class='santo-det' id='santo-orac'>" + (s.oracao || "") + "</div>";
+    if (s.wikipediaSlug) {
+      setTimeout(function() {
+        fetch("https://pt.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(s.wikipediaSlug))
+          .then(function(r){return r.json();}).then(function(d){
+            if (d.thumbnail) {
+              var img = document.getElementById("santo-img");
+              var ph = document.getElementById("santo-ph");
+              if (img) { img.src = d.thumbnail.source; img.style.display = "block"; }
+              if (ph) ph.style.display = "none";
+            }
+          }).catch(function(){});
+      }, 300);
+    }
+  }
   document.getElementById("lit-cont").innerHTML = h;
 }
 function togLit(i) { document.getElementById("li" + i).classList.toggle("ab"); }
+function togSanto(t) {
+  var h = document.getElementById("santo-hist"), o = document.getElementById("santo-orac");
+  if (t === "hist") { h.style.display = h.style.display === "block" ? "none" : "block"; o.style.display = "none"; }
+  else { o.style.display = o.style.display === "block" ? "none" : "block"; h.style.display = "none"; }
+}
 
 // Microfone
 var mRec = null, gravando = false, chunks = [];

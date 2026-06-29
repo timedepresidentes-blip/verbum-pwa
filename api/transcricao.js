@@ -12,26 +12,29 @@ module.exports = async (req, res) => {
   if (!audio) return res.status(400).json({ erro: "Audio nao fornecido" });
 
   try {
-    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const audioBuffer = Buffer.from(audio, "base64");
+    const blob = new Blob([audioBuffer], { type: mimeType || "audio/webm" });
+
+    const formData = new FormData();
+    formData.append("file", blob, "audio.webm");
+    formData.append("model", "whisper-large-v3-turbo");
+    formData.append("language", "pt");
+    formData.append("response_format", "json");
+
+    const r = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + GROQ_KEY },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "user", content: [
-            { type: "text", text: "Transcreva este audio em portugues. Retorne apenas o texto transcrito." },
-            { type: "image_url", image_url: { url: `data:${mimeType || "audio/webm"};base64,${audio}` } }
-          ]}
-        ],
-        max_tokens: 500
-      })
+      headers: { "Authorization": "Bearer " + GROQ_KEY },
+      body: formData
     });
-    if (!r.ok) throw new Error("status " + r.status);
+
+    if (!r.ok) {
+      const err = await r.text();
+      throw new Error("Groq Whisper status " + r.status + ": " + err);
+    }
+
     const data = await r.json();
-    const texto = data.choices?.[0]?.message?.content || "";
-    if (!texto.trim()) throw new Error("sem texto");
-    return res.status(200).json({ texto: texto.trim() });
+    return res.status(200).json({ texto: data.text || "" });
   } catch (e) {
-    return res.status(500).json({ erro: "Falha na transcricao" });
+    return res.status(500).json({ erro: e.message });
   }
 };
