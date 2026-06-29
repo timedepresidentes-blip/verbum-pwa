@@ -29,7 +29,8 @@ exports.handler = async function(event, context) {
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.2,
-        max_tokens: 1500
+        max_tokens: 4000,
+        response_format: { type: "json_object" }
       })
     });
 
