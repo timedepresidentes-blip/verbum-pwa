@@ -17,50 +17,42 @@ exports.handler = async function(event, context) {
 
   const prompt = `Liturgia catolica do dia ${dia} de ${nomeMes} de ${ano} no Brasil. Retorne APENAS JSON valido, sem markdown, sem explicacoes: {"celebracao":"nome da celebracao","corLiturgica":"Verde","tempoLiturgico":"texto do tempo liturgico","leituras":[{"tipo":"Primeira Leitura","ref":"referencia","resumo":"titulo ou resumo","texto":"texto completo da leitura"},{"tipo":"Salmo Responsorial","ref":"referencia","resumo":"refrao","texto":"texto do salmo"},{"tipo":"Evangelho","ref":"referencia","resumo":"titulo ou resumo","texto":"texto completo do evangelho"}]}`;
 
-  const modelos = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
+  const modelos = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro"];
   const erros = [];
 
   for (const modelo of modelos) {
-    for (const [url, hdrs] of [
-      [
+    try {
+      const r = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${GEMINI_KEY}`,
-        { "Content-Type": "application/json" }
-      ],
-      [
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`,
-        { "Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY }
-      ]
-    ]) {
-      try {
-        const r = await fetch(url, {
+        {
           method: "POST",
-          headers: hdrs,
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: { temperature: 0.2, maxOutputTokens: 1500 }
           })
-        });
-        const txt = await r.text();
-        if (!r.ok) {
-          erros.push(`${modelo} status:${r.status} ${txt.substring(0, 150)}`);
-          continue;
         }
-        const data = JSON.parse(txt);
-        const texto = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        const match = texto.match(/\{[\s\S]*\}/);
-        if (match) {
-          try {
-            JSON.parse(match[0]); // valida JSON antes de retornar
-            return { statusCode: 200, headers, body: match[0] };
-          } catch(e) {
-            erros.push(`${modelo} JSON invalido`);
-          }
-        } else {
-          erros.push(`${modelo} sem JSON na resposta`);
-        }
-      } catch(e) {
-        erros.push(`${modelo} erro: ${e.message}`);
+      );
+      const txt = await r.text();
+      if (!r.ok) {
+        erros.push(`${modelo} status:${r.status}`);
+        continue;
       }
+      const data = JSON.parse(txt);
+      const texto = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const match = texto.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          JSON.parse(match[0]);
+          return { statusCode: 200, headers, body: match[0] };
+        } catch(e) {
+          erros.push(`${modelo} JSON invalido`);
+        }
+      } else {
+        erros.push(`${modelo} sem JSON na resposta`);
+      }
+    } catch(e) {
+      erros.push(`${modelo} erro: ${e.message}`);
     }
   }
 
